@@ -8,19 +8,34 @@ import {AngularFirestore} from '../../../node_modules/@angular/fire/firestore';
 import {Store} from '@ngrx/store';
 import {AppState} from '../app.reducer';
 import {ActivarLoadingAction, DesactivarLoadingAction} from '../shared/ui.actions';
+import {SetUserAction} from './auth.actions';
+import {Subscription} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  public userSubscription: Subscription = new Subscription();
 
-  constructor(private afAuth: AngularFireAuth, private router: Router, private angularFireDB: AngularFirestore, private store: Store<AppState>) {
+  constructor(private afAuth: AngularFireAuth,
+              private router: Router,
+              private angularFireDB: AngularFirestore,
+              private store: Store<AppState>) {
   }
 
 
   initAuthListener() {
-    this.afAuth.authState.subscribe(fbUser => {
-      console.log(fbUser);
+    this.userSubscription = this.afAuth.authState.subscribe(fbUser => {
+      if (fbUser) {
+        this.angularFireDB.doc(`${fbUser.uid}/usuario`).valueChanges()
+          .subscribe((usuarioObj: any) => {
+            const newUser = new User(usuarioObj);
+            this.store.dispatch(new SetUserAction(newUser));
+            console.log(newUser);
+          });
+      } else {
+        this.userSubscription.unsubscribe();
+      }
     });
   }
 
