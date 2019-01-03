@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../auth.service';
+import {Store} from '@ngrx/store';
+import {AppState} from '../../app.reducer';
 
 @Component({
   selector: 'app-login',
@@ -7,11 +9,15 @@ import {AuthService} from '../auth.service';
   styles: []
 })
 export class LoginComponent implements OnInit {
+  cargando: boolean;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private store: Store<AppState>) {
   }
 
   ngOnInit() {
+    this.store.select('ui').subscribe(ui => {
+      this.cargando = ui.loading;
+    });
   }
 
   login(value: any) {
