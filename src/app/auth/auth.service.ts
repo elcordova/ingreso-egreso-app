@@ -16,6 +16,7 @@ import {Subscription} from 'rxjs';
 })
 export class AuthService {
   public userSubscription: Subscription = new Subscription();
+  private user: User;
 
   constructor(private afAuth: AngularFireAuth,
               private router: Router,
@@ -30,6 +31,7 @@ export class AuthService {
         this.angularFireDB.doc(`${fbUser.uid}/usuario`).valueChanges()
           .subscribe((usuarioObj: any) => {
             const newUser = new User(usuarioObj);
+            this.user = newUser;
             this.store.dispatch(new SetUserAction(newUser));
             console.log(newUser);
           });
@@ -83,5 +85,10 @@ export class AuthService {
       }
       return !!obj;
     }));
+  }
+
+
+  getUser() {
+    return {...this.user};
   }
 }
