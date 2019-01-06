@@ -13,6 +13,7 @@ import {Subscription} from 'rxjs';
 })
 export class IngresoEgresoService {
   ingresoEgresoSubscriptions: Subscription = new Subscription();
+  ingresoEgresoItemsSubscriptions: Subscription = new Subscription();
 
   constructor(private afDB: AngularFirestore, private authService: AuthService, private store: Store<AppState>) {
   }
@@ -28,15 +29,15 @@ export class IngresoEgresoService {
   }
 
   initIngresoEgrsoListener() {
-    this.ingresoEgresoSubscriptions.add(this.store.select('auth')
+    this.ingresoEgresoSubscriptions = this.store.select('auth')
       .pipe(filter(auth => !!auth.user))
       .subscribe(auth => {
         this.ingresoEgresoItems(auth.user.uid);
-      }));
+      });
   }
 
   private ingresoEgresoItems(uid: String) {
-    this.ingresoEgresoSubscriptions.add(this.afDB.collection(`${uid}/ingresos-egresos/items`)
+    this.ingresoEgresoItemsSubscriptions = this.afDB.collection(`${uid}/ingresos-egresos/items`)
       .snapshotChanges()
       .pipe(map(snapshot => {
           return snapshot.map(s => {
@@ -48,11 +49,12 @@ export class IngresoEgresoService {
       )
       .subscribe((collection: any) => {
         this.store.dispatch(new SetItemsActions(collection));
-      }));
+      });
   }
 
   cancelSubscriptions() {
     this.ingresoEgresoSubscriptions.unsubscribe();
+    this.ingresoEgresoItemsSubscriptions.unsubscribe();
     this.store.dispatch(new UnsetItemsActions());
   }
 }

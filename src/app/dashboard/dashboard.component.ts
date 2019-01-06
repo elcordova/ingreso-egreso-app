@@ -16,8 +16,4 @@ export class DashboardComponent implements OnInit {
     this.ingresoEgresoService.initIngresoEgrsoListener();
   }
 
-  private ingresoEgresoItems(uid: string){
-
-  }
-
 }
