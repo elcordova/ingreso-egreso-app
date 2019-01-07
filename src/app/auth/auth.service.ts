@@ -33,7 +33,6 @@ export class AuthService {
             const newUser = new User(usuarioObj);
             this.user = newUser;
             this.store.dispatch(new SetUserAction(newUser));
-            console.log(newUser);
           });
       } else {
         this.userSubscription.unsubscribe();

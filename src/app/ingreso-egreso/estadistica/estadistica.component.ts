@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {AppState} from '../../app.reducer';
 import {Store} from '@ngrx/store';
 import {IngresoEgresoModel} from '../ingreso-egreso.model';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {AppState} from '../ingreso-egreso.reducer';
 
 @Component({
   selector: 'app-estadistica',
